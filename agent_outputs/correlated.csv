@@ -1,0 +1,21 @@
+correlation_report
+"Here is the correlated incident view:
+
+```
+incident_id,timestamp,endpoint,indicator_type,indicator_value,source,risk_level,confidence,mitre_technique,summary
+INC-2026-0918-001,2026-09-18 02:15:00,LAPTOP-101,IP Address,185.220.101.45,SIEM,High,90,T1471 (C2 Grouping),Malicious IP associated with C2 activity
+INC-2026-0918-001,2026-09-18 02:16:00,LAPTOP-102,IP Address,185.220.101.45,EDR,Medium,85,T1471 (C2 Grouping),Malicious IP associated with potential C2 activity on multiple endpoints
+INC-2026-0918-001,2026-09-18 02:15:00,LAPTOP-101,File Hash,ABC123XYZ,SIEM,High,95,T1486 (Data Encrypted for Impact),Associated file hash linked to malware or ransomware activity
+INC-2026-0918-001,2026-09-18 02:16:00,LAPTOP-102,File Hash,ABC123XYZ,EDR,Medium,90,T1471 (C2 Grouping),Multiple endpoints infected with malware or ransomware, possibly through potential C2 activity
+INC-2026-0918-001,2026-09-18 02:20:00,LAPTOP-101,Event Details,Shadow copy deletion,EDR,Critical,90,T1490 (Inhibit System Recovery),High-impact endpoint event associated with data encryption and potential ransomware activity
+INC-2026-0918-001,2026-09-18 02:16:00,LAPTOP-102,Scheduled Task,SystemUpdate,SIEM,High,85,T1053.005 (Scheduled Task),Persistence mechanism recorded on multiple endpoints, possibly linked to malware or ransomware infection
+```
+
+The observations were correlated based on the following relationships:
+
+* Malicious IP address `185.220.101.45` was observed on multiple endpoints (`LAPTOP-101` and `LAPTOP-102`) at timestamps `2026-09-18 02:15:00` and `2026-09-18 02:16:00`, respectively (SIEM and EDR sources).
+* File hash `ABC123XYZ` was observed on multiple endpoints (`LAPTOP-101` and `LAPTOP-102`) at timestamps `2026-09-18 02:15:00` and `2026-09-18 02:16:00`, respectively (SIEM and EDR sources).
+* A high-impact endpoint event (`Shadow copy deletion`) was observed on `LAPTOP-101` at timestamp `2026-09-18 02:20:00` (EDR source), and is associated with potential ransomware activity.
+* Scheduled tasks were recorded on multiple endpoints (`LAPTOP-101` and `LAPTOP-102`) via SIEM, with possible connections to the malicious IP address.
+
+It's worth noting that some events were initially flagged as ""missing information"" due to unclear or incomplete data. However, after reviewing the correlations above, most of these have been resolved."

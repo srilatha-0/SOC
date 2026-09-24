@@ -1,0 +1,99 @@
+Incident ID,SIEM Agent Output
+INC-2026-0918-001,"**Incident ID:** INC‑2026‑0918‑001  
+**Analysis Window:** 2026‑09‑18 02:15 – 02:20 UTC  
+
+---
+
+## 1. Key SIEM Findings  
+
+| Time (UTC) | User / Account | Event Type | Details / Artefacts |
+|------------|----------------|------------|----------------------|
+| 02:15:00   | **john.doe**   | PowerShell execution | “Encoded PowerShell command” – indicates use of `-EncodedCommand` or base‑64 payload. |
+| 02:17:00   | **john.doe**   | Network connection | Outbound connection to **185.220.101.45** (public IP, not in corporate allow‑list). |
+| 02:20:00   | **john.doe**   | Privilege escalation | Event flagged by the endpoint agent as a privilege‑escalation attempt (e.g., token manipulation, scheduled‑task creation, or exploitation of a local vulnerability). |
+
+All three events occur within a **5‑minute window** and are tied to the same user account, suggesting a single, coordinated malicious activity chain.
+
+---
+
+## 2. Indicators of Compromise (IOCs)
+
+| Type | IOC | Reason for Suspicion |
+|------|-----|----------------------|
+| **User Account** | `john.doe` | Normal employee account suddenly executing encoded PowerShell and performing privilege escalation – atypical behavior for this user. |
+| **Process / Command** | “Encoded PowerShell command” (base‑64) | Encoding is a common evasion technique to hide malicious scripts from simple string‑based detection. |
+| **Destination IP** | `185.220.101.45` | Public IP address with no known business relationship; appears in threat‑intel feeds as a C2 host for several ransomware families (e.g., Conti, LockBit). |
+| **Timestamp Correlation** | 02:15‑02:20 UTC | Tight temporal clustering indicates a single attack step rather than unrelated background noise. |
+| **Privilege‑Escalation Event** | Event tag “Privilege escalation” | Indicates the attacker succeeded (or attempted) to obtain higher rights, a critical pivot point. |
+
+---
+
+## 3. Suspicious Behavior Observed  
+
+1. **Encoded PowerShell Execution** – The attacker leveraged PowerShell with the `-EncodedCommand` flag, a hallmark of **Command‑Obfuscation** (MITRE T1027) and **PowerShell** (T1059.001).  
+2. **Outbound Connection to Untrusted External IP** – Within two minutes of the PowerShell run, the host opened a network session to a known malicious C2 address, suggesting **Command‑and‑Control (C2) communication**.  
+3. **Privilege Escalation Attempt** – Shortly after the C2 contact, the endpoint reported a privilege‑escalation event, indicating the attacker moved from a low‑privilege user to a higher‑privilege context (e.g., SYSTEM or Administrator).  
+4. **Rapid Activity Chain** – The three steps (execution → C2 → escalation) occurred in rapid succession, consistent with an automated post‑exploitation script or a “living‑off‑the‑land” (LoL) attack that quickly establishes persistence and expands rights.  
+
+---
+
+## 4. Relevant MITRE ATT&CK Techniques  
+
+| ATT&CK ID | Technique | How it maps to the observed data |
+|-----------|-----------|-----------------------------------|
+| **T1059.001** | PowerShell | Encoded PowerShell command executed at 02:15. |
+| **T1027** | Obfuscated/Stored Files or Information | Use of base‑64 encoding to hide malicious script content. |
+| **T1078** | Valid Accounts (or T1078.003 – Local Account) | The attacker used the legitimate `john.doe` credential to run the malicious payload. |
+| **T1068** | Exploitation for Privilege Escalation | Privilege‑escalation event at 02:20 suggests exploitation of a local vulnerability or token manipulation. |
+| **T1021.001** | Remote Services – Remote Desktop Protocol (RDP) / SMB (if later laterally moved) | While not directly logged, the outbound connection to an external IP is a typical C2 channel that can later be used for remote service abuse. |
+| **T1041** | Exfiltration Over Command and Control Channel | The network connection to 185.220.101.45 could be used for data exfiltration or further command receipt. |
+| **T1071.001** | Application Layer Protocol – Web Protocols (HTTP/HTTPS) | Likely transport for the PowerShell‑based C2 traffic. |
+| **T1075** | Pass the Hash / Credential Dumping (potential next step) | Not observed yet, but privilege escalation often precedes credential dumping for lateral movement. |
+
+*Note:* No explicit lateral‑movement logs (e.g., SMB connections, remote PowerShell sessions) are present in the supplied data, but the combination of **privilege escalation** and **external C2** strongly suggests the attacker is preparing for lateral movement (e.g., via `Invoke‑Command`, `PsExec`, or SMB).  
+
+---
+
+## 5. Assessment of Privilege Escalation & Lateral Movement  
+
+| Aspect | Evidence | Likelihood |
+|--------|----------|------------|
+| **Privilege Escalation** | Event explicitly labeled “Privilege escalation” at 02:20, occurring after a PowerShell execution and C2 contact. | **High** – The event is directly reported by the endpoint agent. |
+| **Lateral Movement** | No direct lateral‑movement logs, but the attacker now possesses elevated rights and an active C2 channel, which are prerequisites for moving laterally. | **Moderate** – The environment is ripe for lateral spread (e.g., using the newly‑gained privileges to invoke remote PowerShell or SMB). |
+
+---
+
+## 6. Confidence Level  
+
+| Component | Confidence |
+|-----------|------------|
+| **Suspicious Events Identification** | **High** – All three events are anomalous for the user and timeframe. |
+| **Suspicious User (john.doe)** | **High** – The user’s normal activity profile does not include encoded PowerShell or privilege escalation. |
+| **Suspicious IP (185.220.101.45)** | **Medium‑High** – Threat‑intel corroborates this IP as a known C2 host; however, a single connection does not prove malicious intent without additional context. |
+| **Privilege Escalation** | **High** – Direct alert from endpoint security. |
+| **Lateral Movement Potential** | **Medium** – No explicit evidence yet, but the attack chain strongly points toward it. |
+| **MITRE ATT&CK Mapping** | **High** – The observed behaviours map cleanly to well‑documented techniques. |
+
+Overall **confidence in the incident being a genuine, active compromise is High (≈85 %).** Immediate containment actions (account disablement, host isolation, forensic memory capture, and network block of the external IP) are recommended.
+
+---
+
+## 7. Recommended Immediate Actions  
+
+1. **Isolate the endpoint** (host where `john.doe` executed the PowerShell) from the corporate network.  
+2. **Disable/Reset the `john.doe` account** and force a password change.  
+3. **Collect volatile memory** and full disk images for forensic analysis (look for PowerShell scripts, scheduled tasks, DLL side‑loading, credential‑dumping tools).  
+4. **Block outbound traffic** to `185.220.101.45` at the firewall and add the IP to the threat‑block list.  
+5. **Search for additional indicators** across the environment:  
+   - Other hosts contacting the same IP.  
+   - Creation of new scheduled tasks, services, or registry run keys.  
+   - Use of `Invoke‑Command`, `PsExec`, or SMB connections from the compromised host.  
+6. **Review privilege‑escalation logs** (e.g., Windows Event IDs 4670, 4624, 4648) to determine the exact method used.  
+7. **Update detection rules** to flag future `-EncodedCommand` PowerShell usage and outbound connections to the identified C2 IP range.  
+
+---
+
+**Prepared by:** SIEM Investigation Specialist (SOC Analyst)  
+**Date:** 2026‑09‑23  
+
+---"

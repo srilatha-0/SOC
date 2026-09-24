@@ -1,0 +1,63 @@
+{
+  "incident_id": "INC-2026-0918-001",
+  "severity": "HIGH",
+  "description": "Possible ransomware activity detected",
+  "affected_endpoints": [
+    "LAPTOP-101",
+    "LAPTOP-102",
+    "LAPTOP-103"
+  ],
+  "siem_data": {
+    "events": [
+      {
+        "timestamp": "2026-09-18T02:15:00",
+        "user": "john.doe",
+        "event": "PowerShell execution",
+        "details": "Encoded PowerShell command"
+      },
+      {
+        "timestamp": "2026-09-18T02:17:00",
+        "user": "john.doe",
+        "event": "Network connection",
+        "destination_ip": "185.220.101.45"
+      },
+      {
+        "timestamp": "2026-09-18T02:20:00",
+        "user": "john.doe",
+        "event": "Privilege escalation"
+      }
+    ]
+  },
+  "edr_data": {
+    "processes": [
+      {
+        "endpoint": "LAPTOP-101",
+        "process": "powershell.exe",
+        "command": "EncodedCommand",
+        "hash": "ABC123XYZ"
+      },
+      {
+        "endpoint": "LAPTOP-102",
+        "process": "powershell.exe",
+        "command": "EncodedCommand",
+        "hash": "ABC123XYZ"
+      }
+    ]
+  },
+  "threat_intelligence": {
+    "indicators": [
+      {
+        "type": "IP",
+        "value": "185.220.101.45",
+        "reputation": "Malicious",
+        "confidence": 95
+      },
+      {
+        "type": "HASH",
+        "value": "ABC123XYZ",
+        "reputation": "Malware-associated",
+        "confidence": 90
+      }
+    ]
+  }
+}

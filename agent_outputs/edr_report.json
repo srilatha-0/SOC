@@ -1,0 +1,236 @@
+{
+  "report_type": "edr_investigation",
+  "incident_id": "INC-2026-0918-001",
+  "source_severity": "HIGH",
+  "analysis_timestamp_utc": "2026-09-21T03:34:23.369189+00:00",
+  "scope": {
+    "affected_endpoints": [
+      "LAPTOP-101",
+      "LAPTOP-102"
+    ],
+    "endpoint_count": 2,
+    "processes_reviewed": 2
+  },
+  "assessment": {
+    "risk_score": 100,
+    "confidence": 85,
+    "finding_count": 7,
+    "verdict": "requires_human_soc_review"
+  },
+  "findings": [
+    {
+      "title": "Suspicious process observed: powershell.exe",
+      "severity": "medium",
+      "confidence": 55,
+      "mitre_attack": {
+        "technique_id": "T1059.001",
+        "technique": "PowerShell"
+      },
+      "rationale": "The process is commonly abused by attackers. The process name alone does not prove malicious activity.",
+      "evidence": [
+        {
+          "source_path": "edr_data.processes[0]",
+          "record_id": "proc-101",
+          "observed": {
+            "endpoint": "LAPTOP-101",
+            "process": "powershell.exe",
+            "command": "powershell.exe -EncodedCommand SQBFAFgA",
+            "hash": "ABC123XYZ",
+            "timestamp": "2026-09-18T02:15:00Z"
+          }
+        }
+      ],
+      "requires_human_review": true
+    },
+    {
+      "title": "Suspicious command-line behavior: Encoded PowerShell command",
+      "severity": "high",
+      "confidence": 80,
+      "mitre_attack": {
+        "technique_id": "T1059.001",
+        "technique": "Encoded PowerShell command"
+      },
+      "rationale": "The command line contains the observed pattern 'encodedcommand'. Review the decoded command or parent process before acting.",
+      "evidence": [
+        {
+          "source_path": "edr_data.processes[0]",
+          "record_id": "proc-101",
+          "observed": {
+            "endpoint": "LAPTOP-101",
+            "process": "powershell.exe",
+            "command": "powershell.exe -EncodedCommand SQBFAFgA",
+            "hash": "ABC123XYZ",
+            "timestamp": "2026-09-18T02:15:00Z"
+          }
+        }
+      ],
+      "requires_human_review": true
+    },
+    {
+      "title": "Suspicious process observed: powershell.exe",
+      "severity": "medium",
+      "confidence": 55,
+      "mitre_attack": {
+        "technique_id": "T1059.001",
+        "technique": "PowerShell"
+      },
+      "rationale": "The process is commonly abused by attackers. The process name alone does not prove malicious activity.",
+      "evidence": [
+        {
+          "source_path": "edr_data.processes[1]",
+          "record_id": "proc-102",
+          "observed": {
+            "endpoint": "LAPTOP-102",
+            "process": "powershell.exe",
+            "command": "powershell.exe -EncodedCommand SQBFAFgA",
+            "hash": "ABC123XYZ",
+            "timestamp": "2026-09-18T02:16:00Z"
+          }
+        }
+      ],
+      "requires_human_review": true
+    },
+    {
+      "title": "Suspicious command-line behavior: Encoded PowerShell command",
+      "severity": "high",
+      "confidence": 80,
+      "mitre_attack": {
+        "technique_id": "T1059.001",
+        "technique": "Encoded PowerShell command"
+      },
+      "rationale": "The command line contains the observed pattern 'encodedcommand'. Review the decoded command or parent process before acting.",
+      "evidence": [
+        {
+          "source_path": "edr_data.processes[1]",
+          "record_id": "proc-102",
+          "observed": {
+            "endpoint": "LAPTOP-102",
+            "process": "powershell.exe",
+            "command": "powershell.exe -EncodedCommand SQBFAFgA",
+            "hash": "ABC123XYZ",
+            "timestamp": "2026-09-18T02:16:00Z"
+          }
+        }
+      ],
+      "requires_human_review": true
+    },
+    {
+      "title": "Hash observed on multiple endpoints: ABC123XYZ",
+      "severity": "high",
+      "confidence": 75,
+      "mitre_attack": null,
+      "rationale": "The same hash appeared on multiple endpoints. This supports scoping but does not establish a malware classification or MITRE technique without further evidence.",
+      "evidence": [
+        {
+          "source_path": "edr_data.processes[0]",
+          "record_id": "proc-101",
+          "observed": {
+            "endpoint": "LAPTOP-101",
+            "process": "powershell.exe",
+            "command": "powershell.exe -EncodedCommand SQBFAFgA",
+            "hash": "ABC123XYZ",
+            "timestamp": "2026-09-18T02:15:00Z",
+            "endpoint_count": 2,
+            "endpoints": [
+              "LAPTOP-101",
+              "LAPTOP-102"
+            ]
+          }
+        }
+      ],
+      "requires_human_review": true
+    },
+    {
+      "title": "Persistence mechanism recorded: Scheduled Task",
+      "severity": "high",
+      "confidence": 70,
+      "mitre_attack": {
+        "technique_id": "T1053.005",
+        "technique": "Scheduled Task"
+      },
+      "rationale": "A persistence-capable mechanism was recorded. Confirm its owner, signer, and installation history with the endpoint owner.",
+      "evidence": [
+        {
+          "source_path": "edr_data.persistence[0]",
+          "record_id": "persist-101",
+          "observed": {
+            "endpoint": "LAPTOP-101",
+            "type": "scheduled_task",
+            "command": "powershell.exe -File C:\\ProgramData\\update.ps1",
+            "name": "SystemUpdate",
+            "timestamp": "2026-09-18T02:18:00Z"
+          }
+        }
+      ],
+      "requires_human_review": true
+    },
+    {
+      "title": "High-impact endpoint activity: Inhibit System Recovery",
+      "severity": "critical",
+      "confidence": 90,
+      "mitre_attack": {
+        "technique_id": "T1490",
+        "technique": "Inhibit System Recovery"
+      },
+      "rationale": "The endpoint event contains 'shadow copy', a behavior associated with ransomware impact or defense evasion. Escalate for immediate human review.",
+      "evidence": [
+        {
+          "source_path": "edr_data.endpoint_events[0]",
+          "record_id": "event-101",
+          "observed": {
+            "endpoint": "LAPTOP-101",
+            "event": "Shadow copy deletion",
+            "details": "vssadmin delete shadows /all /quiet",
+            "timestamp": "2026-09-18T02:20:00Z"
+          }
+        }
+      ],
+      "requires_human_review": true
+    }
+  ],
+  "mitre_attack_hypotheses": [
+    {
+      "technique_id": "T1053.005",
+      "technique": "Scheduled Task"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique": "Encoded PowerShell command"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique": "PowerShell"
+    },
+    {
+      "technique_id": "T1490",
+      "technique": "Inhibit System Recovery"
+    }
+  ],
+  "recommended_next_steps": [
+    "Have an authorized SOC analyst validate each finding against raw endpoint telemetry.",
+    "Preserve relevant endpoint evidence and expand the hunt using the listed hashes and command lines.",
+    "Seek human approval before any endpoint isolation, process termination, or account action."
+  ],
+  "audit_trail": [
+    {
+      "source_path": "edr_data.processes[0]",
+      "status": "reviewed",
+      "endpoint": "LAPTOP-101"
+    },
+    {
+      "source_path": "edr_data.processes[1]",
+      "status": "reviewed",
+      "endpoint": "LAPTOP-102"
+    },
+    {
+      "source_path": "edr_data.persistence[0]",
+      "status": "reviewed",
+      "endpoint": "LAPTOP-101"
+    },
+    {
+      "source_path": "edr_data.endpoint_events[0]",
+      "status": "reviewed",
+      "endpoint": "LAPTOP-101"
+    }
+  ]
+}

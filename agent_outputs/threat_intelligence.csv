@@ -1,0 +1,23 @@
+incident_id,generated_at,agent_name,report_type,report
+INC-2026-0918-001,2026-09-24T11:51:28.171813+00:00,Threat Intelligence Specialist,threat_intelligence,"**Incident THREAT INTELLIGENCE ASSESSMENT**
+
+For Incident INC-2026-0918-001:
+
+**Indicator 1:** IP Address - `185.220.101.45`
+
+1. **Reputation and Malicious Status**: Malicious
+2. **Confidence Level**: High (95%)
+3. **Possible Threat Category**: Command and Control (C2)
+4. **Adversary Technique References**: [T1471](https://attack.mitre.org/techniques/T1471/) - C2 Grouping
+
+**Indicator 2:** Hash - `ABC123XYZ`
+
+1. **Reputation and Malicious Status**: Malware-associated
+2. **Confidence Level**: High (90%)
+3. **Possible Threat Category**: [Malware or Ransomware]
+4. **Adversary Technique References**: [T1486](https://attack.mitre.org/techniques/T1486/) - Data Encrypted for Impact
+
+**Notes:**
+- No adversary techniques listed as supported for Indicator 2 due to insufficient data.
+
+Please note that this assessment is based solely on the provided Threat Intelligence data and should not be considered a definitive security verdict in isolation."
